@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recognize Face</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/recognize.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Face Recognition</h1>
+
+        <div class="camera-container">
+            <div class="camera-feed">
+                <video id="videoElement" autoplay playsinline></video>
+                <canvas id="overlayCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="status-container">
+            <div class="status-label">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusLabel">Status: Ready</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startButton">Start Recognition</button>
+            <button id="stopButton" disabled>Stop Recognition</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/recognize.js') }}"></script>
+</body>
+</html>

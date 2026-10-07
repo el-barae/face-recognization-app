@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import Dataset</title>
+  <style>
+    /* Global styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #e0f7fa; /* Light cyan background */
+      color: #006064; /* Dark cyan text */
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Container styles */
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background-color: #ffffff; /* White background */
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Heading styles */
+    h1 {
+      color: #00838f; /* Cyan heading */
+      margin-bottom: 20px;
+    }
+
+    /* Form styles */
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    label {
+      font-size: 1.1rem;
+      color: #004d40; /* Deep cyan label */
+      margin-bottom: 10px;
+    }
+
+    input {
+      padding: 10px;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 20px;
+      border: 1px solid #b2ebf2; /* Light cyan border */
+      border-radius: 5px;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    input:focus {
+      border-color: #00838f; /* Cyan focus border */
+      box-shadow: 0 0 5px #80deea; /* Light glow effect */
+    }
+
+    /* Button styles */
+    button {
+      padding: 10px 20px;
+      background-color: #00838f; /* Cyan button */
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #004d40; /* Dark cyan hover effect */
+      transform: scale(1.05);
+    }
+
+    /* Status message styles */
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #004d40; /* Deep cyan for status */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Import Dataset</h1>
+    <form id="uploadForm">
+      <label for="dataset">Select Dataset Folder (Zip File):</label>
+      <input type="file" id="dataset" name="dataset" accept=".zip" required>
+      <button type="submit">Upload Dataset</button>
+    </form>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const formData = new FormData();
+      const fileInput = document.getElementById('dataset');
+      formData.append('dataset', fileInput.files[0]);
+
+      const statusDiv = document.getElementById('status');
+      statusDiv.textContent = "Uploading dataset...";
+
+      try {
+        const response = await fetch('/add_dataset', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+        statusDiv.textContent = result.message;
+      } catch (error) {
+        statusDiv.textContent = "Error uploading dataset: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>

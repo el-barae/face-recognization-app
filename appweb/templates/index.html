@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition System</title>
+    <style>
+        :root {
+            --primary: #00acc1;
+            --primary-dark: #00838f;
+            --primary-darker: #006064;
+            --background: #e0f7fa;
+            --text: #004d40;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-darker);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        button {
+            font-size: 1.25rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            background-color: var(--primary-darker);
+            transform: translateY(0);
+        }
+
+        .status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            text-align: center;
+            color: var(--text);
+            font-size: 1.125rem;
+        }
+
+        /* Animation for button click */
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        button:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(100, 100);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Face Recognition System</h1>
+        <div class="button-container">
+            <button onclick="handleClick('add')" id="addButton" >
+                Add Face to Database
+            </button>
+            <button onclick="handleClick('recognize')" id="recognizeButton">
+                Recognize Face
+            </button>
+            <button onclick="trainModel()" id="trainButton">
+                Train Model
+            </button>
+
+            <button onclick="handleClick('analyze')" id="analyzeButton">
+                Analyze Video
+            </button>
+            <button onclick="handleClick('dataset')" id="datasetButton">
+                Add folder to Database
+            </button>
+        </div>
+        <div class="status" id="statusLabel">
+            Status: Ready
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function handleClick(action) {
+    const statusLabel = document.getElementById('statusLabel');
+    const actions = {
+        'add': {
+            message: 'Opening database window...',
+            page: '/addToDB'
+        },
+        'recognize': {
+            message: 'Opening face recognition window...',
+            page: '/recognize'
+        },
+        'train': {
+            message: 'Opening training window...',
+            page: '/train'
+        },
+        'analyze': {
+            message: 'Opening video analysis window...',
+            page: '/analyze'
+        },
+        'dataset': {
+            message: 'Opening dataset window...',
+            page: '/dataset'
+        }
+    };
+
+    const actionInfo = actions[action];
+    statusLabel.textContent = `Status: ${actionInfo.message}`;
+
+    // Button press effect
+    const button = document.getElementById(`${action}Button`);
+    button.style.transform = 'scale(0.95)';
+
+    // Create transition effect
+    document.body.style.opacity = '0.5';
+    document.body.style.transition = 'opacity 0.3s ease';
+
+    setTimeout(() => {
+        button.style.transform = 'scale(1)';
+
+        // Navigate to new page
+        window.location.href = actionInfo.page;
+    }, 200);
+}
+// Function to load page content dynamically (for SPA approach)
+async function loadPage(page) {
+    try {
+        const response = await fetch(page);
+        if (!response.ok) throw new Error('Page not found');
+
+        const content = await response.text();
+
+        // Fade in new content
+        const mainContent = document.getElementById('mainContent');
+        mainContent.innerHTML = content;
+        document.body.style.opacity = '1';
+
+        // Update page title based on the page
+        const titles = {
+            '/addToDB.html': 'Add to Database',
+            '/recognize-face.html': 'Recognize Face',
+            '/train-model.html': 'Train Model',
+            '/analyze-video.html': 'Analyze Video',
+            '/add-dataset.html': 'Add Dataset'
+        };
+        document.title = `Face Recognition System - ${titles[page] || 'Home'}`;
+
+    } catch (error) {
+        console.error('Error loading page:', error);
+        document.body.style.opacity = '1';
+        alert('Error loading page. Please try again.');
+    }
+}
+
+// Add event listener for browser back/forward buttons
+window.addEventListener('popstate', (event) => {
+    const page = window.location.pathname;
+    loadPage(page);
+});
+
+
+function trainModel() {
+        const trainButton = document.getElementById("trainButton");
+        trainButton.disabled = true; // Disable button to prevent multiple requests
+        trainButton.textContent = "Training...";
+
+        fetch('/train-model', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                Swal.fire({
+                    title: 'Training Successful!',
+                    icon: 'success',
+                    html: `
+                        <p><strong>Details:</strong></p>
+                        <ul style="text-align: left; font-size: 14px;">
+                            <li><strong>Images Used:</strong> ${data.details.images_used}</li>
+                            <li><strong>Invalid Entries:</strong> ${data.details.invalid_entries}</li>
+                            <li><strong>Model Path:</strong> ${data.details.model_path}</li>
+                        </ul>
+                    `,
+                    confirmButtonText: 'Great!',
+                    confirmButtonColor: '#00acc1'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Training Failed',
+                    icon: 'error',
+                    text: data.error,
+                    confirmButtonText: 'Try Again',
+                    confirmButtonColor: '#d33'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Unexpected Error',
+                icon: 'error',
+                text: 'An unexpected error occurred during training.',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#d33'
+            });
+        })
+        .finally(() => {
+            trainButton.disabled = false; // Re-enable button
+            trainButton.textContent = "Train Model";
+        });
+    }
+    </script>
+</body>
+</html>

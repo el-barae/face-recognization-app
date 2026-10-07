@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to Database - Face Recognition System</title>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Left side - Form -->
+        <div class="form-section">
+            <div class="input-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" placeholder="Enter User Name" required>
+            </div>
+            <div class="input-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" placeholder="Enter User Age" required>
+            </div>
+            <div class="input-group">
+                <label for="gender">Gender</label>
+                <input type="text" id="gender" placeholder="Enter User Gender" required>
+            </div>
+        </div>
+
+        <!-- Right side - Camera -->
+        <div class="camera-section">
+            <div class="camera-feed">
+                <video id="videoElement" autoplay playsinline></video>
+            </div>
+            <div class="controls">
+                <button id="captureButton">Start Auto-Capture</button>
+                <button id="submitButton" disabled>Submit to Database</button>
+                <div class="status" id="statusLabel">Status: Ready</div>
+            </div>
+            <div class="captures-grid" id="capturesGrid"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

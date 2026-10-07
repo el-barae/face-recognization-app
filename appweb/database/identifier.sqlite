@@ -1,0 +1,1 @@
+update Peoples set name='El Barae' where id>24;

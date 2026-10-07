@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #e0f7fa;
+            color: #006064;
+        }
+
+        h1 {
+            text-align: center;
+            color: #004d40;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        #videoContainer {
+            width: 800px;
+            height: 450px;
+            background: #000;
+            margin: 0 auto;
+            border: 2px solid #004d40;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #videoStream {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        #statusLabel {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #00796b;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #00acc1;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #007c91;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #b2ebf2;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Video Analysis</h1>
+    <div id="videoContainer">
+        <img id="videoStream" alt="Video Stream" style="display: none; width: 100%; max-width: 640px; border: 1px solid #ccc;">
+    </div>
+    <div id="statusLabel">Ready to analyze video...</div>
+    <input type="file" id="videoInput" accept="video/*" hidden>
+    <button id="analyzeButton">Upload and Analyze</button>
+
+    <script>
+        const analyzeButton = document.getElementById("analyzeButton");
+        const videoInput = document.getElementById("videoInput");
+        const videoStream = document.getElementById("videoStream");
+        const statusLabel = document.getElementById("statusLabel");
+
+        analyzeButton.addEventListener("click", () => {
+            videoInput.click();
+        });
+
+        videoInput.addEventListener("change", async () => {
+            const file = videoInput.files[0];
+            if (!file) {
+                statusLabel.textContent = "No video selected.";
+                return;
+            }
+
+            analyzeButton.disabled = true;
+            statusLabel.textContent = "Uploading video...";
+
+            const formData = new FormData();
+            formData.append("video", file);
+
+            try {
+                const response = await fetch('/stream-video', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to start video stream");
+                }
+
+                // Update the stream source and show the video
+                videoStream.src = '/stream-video';
+                videoStream.style.display = "block";
+                statusLabel.textContent = "Analyzing video...";
+            } catch (error) {
+                console.error("Error:", error);
+                statusLabel.textContent = "An error occurred during video analysis.";
+            } finally {
+                analyzeButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
